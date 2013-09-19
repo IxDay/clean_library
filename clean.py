@@ -4,6 +4,7 @@ from path import path
 import re
 import errno
 import mimetypes
+import sys
 
 DATA_TORRENT_DIR = '/home/data/torrents'
 
@@ -241,5 +242,6 @@ def compute_name(media):
     
 
 if __name__ == "__main__":
-    for media in DATA_TORRENT_DIR.listdir():
-        compute_name(media)
+    print sys.argv
+    # for media in DATA_TORRENT_DIR.listdir():
+    #     compute_name(media)
