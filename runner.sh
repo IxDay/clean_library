@@ -44,6 +44,7 @@ function check_properties () {
 }
 
 function construct_path () {
+	export DATA_TORRENT_DIR="$DATA_TORRENT_DIR"
 	export TV_SHOWS_DIR="${END_DIR}/${TV_SHOWS_DIR}"
 	export MOVIES_DIR="${END_DIR}/${MOVIES_DIR}"
 	export MUSICS_DIR="${END_DIR}/${MUSICS_DIR}"

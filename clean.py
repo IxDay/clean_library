@@ -5,23 +5,7 @@ import re
 import errno
 import mimetypes
 import sys
-
-DATA_TORRENT_DIR = '/home/data/torrents'
-
-DATA_END_DIR = '/tmp/test'
-
-DATA_TV_SHOWS = 'videos/tv_shows'
-DATA_MOVIES = 'videos/movies'
-DATA_MUSIC = 'music'
-
-
-
-DATA_TORRENT_DIR = path(DATA_TORRENT_DIR)
-DATA_END_DIR = path(DATA_END_DIR)
-
-DATA_TV_SHOWS = DATA_END_DIR.joinpath(DATA_TV_SHOWS)
-DATA_MUSIC = DATA_END_DIR.joinpath(DATA_MUSIC)
-DATA_MOVIES = DATA_END_DIR.joinpath(DATA_MOVIES)
+import os
 
 tv_show_regex = [
     re.compile(
@@ -100,7 +84,7 @@ def compute_tv_show_name(filename):
     if result:
         return result.group('name'), result.group('season'), result.group('episode')
     
-    result = tv_show_regex[1].match(filename.parent.name)
+    result         = tv_show_regex[1].match(filename.parent.name)
     result_episode = tv_show_regex[2].match(filename.name)
     
     if result and result_episode:        
@@ -161,13 +145,13 @@ def tv_shows(media):
     
     links = []
     for result,filename in results:        
-        show_name = sanitize_name(result[0])
-        season_number = sanitize_number(result[1])
+        show_name      = sanitize_name(result[0])
+        season_number  = sanitize_number(result[1])
         episode_number = sanitize_number(result[2])
 
         name = show_name + '_S' + season_number + 'E' + episode_number + filename.ext
 
-        directory = DATA_TV_SHOWS.joinpath(show_name,'Season_'+ season_number)
+        directory = TV_SHOWS_DIR.joinpath(show_name,'Season_'+ season_number)
         directory.makedirs_p()
 
         links.append(make_link(filename,directory / name))
@@ -179,7 +163,7 @@ def movies(media):
     links = []
     if media.isdir():
         name = sanitize_name(media.basename())
-        directory = DATA_MOVIES / name
+        directory = MOVIES_DIR / name
         directory.makedirs_p()
         
         for movie in media.walkfiles():
@@ -188,7 +172,7 @@ def movies(media):
             make_link(movie, links[-1])
     else:
         name = sanitize_name(media.namebase)
-        directory = DATA_MOVIES / name
+        directory = MOVIES_DIR / name
         directory.makedirs_p()
         links.append(directory.joinpath(name + media.ext))
         make_link(media, links[-1])
@@ -216,20 +200,20 @@ def musics(filename):
         album = artist
         artist = 'Various_Artists'
 
-    directory = DATA_MUSIC / artist
+    directory = MUSICS_DIR / artist
     directory.makedirs_p()
     return make_link(filename, directory / album)
     
 
 def miscellaneous(media):
-    pass
+    return [make_link(media,MISC_DIR / media.basename())]
 
 
 def compute_name(media):
     mimes = guess_type(media)
-    DATA_TV_SHOWS.makedirs_p()
-    DATA_MOVIES.makedirs_p()
-    DATA_MUSIC.makedirs_p()
+    TV_SHOWS_DIR.makedirs_p()
+    MOVIES_DIR.makedirs_p()
+    MUSICS_DIR.makedirs_p()
 
     if 'video' in mimes:
         links = videos(media)
@@ -242,6 +226,24 @@ def compute_name(media):
     
 
 if __name__ == "__main__":
-    print sys.argv
-    # for media in DATA_TORRENT_DIR.listdir():
-    #     compute_name(media)
+    DATA_TORRENT_DIR = path(os.environ['DATA_TORRENT_DIR'])
+    TV_SHOWS_DIR     = path(os.environ['TV_SHOWS_DIR'])
+    MOVIES_DIR       = path(os.environ['MOVIES_DIR'])
+    MUSICS_DIR       = path(os.environ['MUSICS_DIR'])
+    MISC_DIR         = path(os.environ['MISC_DIR'])
+
+
+    TV_SHOWS_DIR.makedirs_p()
+    MOVIES_DIR.makedirs_p()
+    MUSICS_DIR.makedirs_p()
+    MISC_DIR.makedirs_p()
+
+
+    if len(sys.argv) == 1:
+        for media in DATA_TORRENT_DIR.listdir():
+            compute_name(media)
+    else:
+        compute_name(path(sys.argv[1]))
+
+
+    
