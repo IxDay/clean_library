@@ -51,7 +51,17 @@ function construct_path () {
 	export MISC_DIR="${END_DIR}/${MISC_DIR}"	
 }
 
+function clean () {
+	rm -r "$TV_SHOWS_DIR/"*
+	rm -r "$MOVIES_DIR/"*
+	rm -r "$MUSICS_DIR/"*
+	rm -r "$MISC_DIR/"*
+}
+
 function main () {
+
+	[[ "$1" == "clean" ]] && clean && exit
+
 	if [[ ! -a "$CLEAN_SCRIPT" ]]; then
 		echo "Python script for cleaning up directory was not found"
 		exit 1
@@ -86,4 +96,4 @@ done < "$PROPERTY_FILE"
 
 check_properties
 construct_path
-main
+main "$@"

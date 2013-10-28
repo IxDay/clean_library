@@ -69,7 +69,7 @@ def sanitize_name(name):
 
         words_result.append(word.title())
     
-    return "_".join(words_result)
+    return " ".join(words_result)
 
 
 def sanitize_number(number):
@@ -149,9 +149,9 @@ def tv_shows(media):
         season_number  = sanitize_number(result[1])
         episode_number = sanitize_number(result[2])
 
-        name = show_name + '_S' + season_number + 'E' + episode_number + filename.ext
+        name = show_name + ' S' + season_number + 'E' + episode_number + filename.ext
 
-        directory = TV_SHOWS_DIR.joinpath(show_name,'Season_'+ season_number)
+        directory = TV_SHOWS_DIR.joinpath(show_name,'Season '+ season_number)
         directory.makedirs_p()
 
         links.append(make_link(filename,directory / name))
@@ -198,7 +198,7 @@ def musics(filename):
 
     if not album:
         album = artist
-        artist = 'Various_Artists'
+        artist = 'Various Artists'
 
     directory = MUSICS_DIR / artist
     directory.makedirs_p()
